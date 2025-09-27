@@ -45,6 +45,10 @@ class Laberinto:
     def es_salida_real(self, pos):
         return self.grid[pos[0]][pos[1]] == self.SALIDA_REAL
 
+    def en_rango(self, pos):
+        x, y = pos
+        return 0 <= x < self.n and 0 <= y < self.n
+
     def mover_paredes(self, prob=0.2):
         """Con probabilidad 'prob', mueve cada pared a una casilla vacía"""
         nuevas_paredes = []
