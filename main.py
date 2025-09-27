@@ -20,7 +20,8 @@ v_controller = VisualController(ANCHO,ALTO)
 b_start = visual_estado_menu.create_button(ANCHO/2,ALTO/2,300,100,change_laberinto)
 b_start.set_title("Start")
 
-sel_1 = visual_estado_menu.create_selector(ANCHO/2,ALTO/2-100,50,["hola","crakc"])
+sel_1 = visual_estado_menu.create_selector(ANCHO/2,ALTO/2-100,50,["Genético","A*"])
+sel_1.set_title("Selecciona algorítmo")
 
 v_controller.setEstado(visual_estado_menu)
 v_controller.start()

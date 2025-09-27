@@ -72,16 +72,27 @@ class selector:
         self.button_right = button(x+self.offset,y,size,size, self.right)
         self.button_left.set_title("<")
         self.button_right.set_title(">")
-
+        self.title = ""
 
     def draw(self,pantalla):
         self.button_left.draw(pantalla)
         self.button_right.draw(pantalla)
         self.pantalla = pantalla
         self.update_value()
+        self.update_title()
+
+    def set_title(self,title):
+        self.title = title
+
+    def update_title(self):
+        fuente = pygame.font.SysFont(None, 30)
+        texto = fuente.render(self.title, True, CONFIG.BLANCO)
+        rect_texto = texto.get_rect(center=(self.x,self.y-50))
+        if self.pantalla != None:
+            self.pantalla.blit(texto, rect_texto)
 
     def update_value(self):
-        fuente = pygame.font.SysFont(None, 40)
+        fuente = pygame.font.SysFont(None, 30)
         self.actual_value = self.values[self.__val]
         texto = fuente.render(self.actual_value, True, CONFIG.BLANCO)
         rect_texto = texto.get_rect(center=(self.x,self.y))
