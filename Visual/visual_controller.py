@@ -28,8 +28,7 @@ class VisualController:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.__running = False
-                if event.type == pygame.KEYDOWN:
-                    self.__estado.event(event)
+                self.__estado.event(event) #type:ignore
 
             self.__estado.run(self.__pantalla) #type:ignore
             pygame.display.flip()
