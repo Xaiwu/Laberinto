@@ -1,4 +1,4 @@
-from re import S
+import copy
 
 from Logica.laberinto import Laberinto
 from Visual import visual_controller as CONFIG #type:ignore
@@ -39,6 +39,7 @@ class LaberintoVisual:
     def first_call(self):
         if self.first_called:
             return
+        print(self.laberinto.salida_real.posicion)
 
         self.first_called = True
 
@@ -57,39 +58,53 @@ class LaberintoVisual:
             self.alg_genetico()
 
     def alg_genetico(self):
-        pasos, fit, h = genetico.algoritmo_genetico(self.agente.lab)
-        print(pasos)
+        pasos, fit = genetico.algoritmo_genetico(self.agente.lab)
 
-        h_int = 0
-        for var in pasos: # type:ignore
-            h_int += 1
+        pos_fila = []
+        lab_fila = []
+        np = (0,0)
+        while pasos.__len__() > 0: # type:ignore
+            var = pasos.pop(0)
             self.pantalla.fill(CONFIG.BLANCO)
-            if var == 'LEFT':
-                self.agente.posicion = (self.agente.posicion[0],self.agente.posicion[1]-1)
-            if var == 'RIGHT':
-                self.agente.posicion = (self.agente.posicion[0],self.agente.posicion[1]+1)
             if var == 'DOWN':
-                self.agente.posicion = (self.agente.posicion[0] + 1,self.agente.posicion[1])
+                np = (np[0],np[1]+1)
             if var == 'UP':
-                self.agente.posicion = (self.agente.posicion[0] - 1,self.agente.posicion[1])
+                np = (np[0],np[1]-1)
+            if var == 'RIGHT':
+                np = (np[0] + 1,np[1])
+            if var == 'LEFT':
+                np = (np[0] - 1,np[1])
 
-            pygame.time.wait(300)
-            if h_int < h.__len__():
-                self.agente.lab.grid = h[h_int]
+            if self.agente.lab.es_pared(np) or not self.agente.lab.en_rango(np):
+                np = (0,0)
+                pasos, fit = genetico.algoritmo_genetico(self.agente.lab)
+                pos_fila = []
+                lab_fila = []
+            else:
+                pos_fila.append(np)
+                lab_fila.append(copy.deepcopy(self.agente.lab.grid))
+            self.agente.lab.mover_paredes(np)
+
+        while pos_fila.__len__() > 0:
+            self.pantalla.fill(CONFIG.BLANCO)
+            np = pos_fila.pop(0)
+            self.agente.lab.grid = lab_fila.pop(0)
+            self.agente.posicion = np
+
+            pygame.time.wait(100)
 
             self.dibujar_grid()
             self.dibujar_agente()
             pygame.display.flip()
 
         pygame.time.wait(2000)
-        pygame.quit()
 
 
     # Dibujar el laberinto
     def dibujar_grid(self):
         for i in range(self.laberinto.n):
             for j in range(self.laberinto.n):
-                x, y = j*self.tam_bloque, i*self.tam_bloque
+                x, y = i*self.tam_bloque, j*self.tam_bloque
                 if self.agente.lab.grid[i][j] == Laberinto.PARED:
                     pygame.draw.rect(self.pantalla,CONFIG.NEGRO, (x, y,self.tam_bloque,self.tam_bloque))
                 if self.agente.lab.grid[i][j] == Laberinto.SALIDA:
@@ -99,5 +114,5 @@ class LaberintoVisual:
                 pygame.draw.rect(self.pantalla, CONFIG.GRIS, (x, y, self.tam_bloque,self.tam_bloque),1)
 
     def dibujar_agente(self):
-        x, y = self.agente.posicion[1]*self.tam_bloque, self.agente.posicion[0]*self.tam_bloque
+        x, y = self.agente.posicion[0]*self.tam_bloque, self.agente.posicion[1]*self.tam_bloque
         pygame.draw.rect(self.pantalla,CONFIG.AZUL, (x, y,self.tam_bloque,self.tam_bloque))

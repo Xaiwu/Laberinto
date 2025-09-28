@@ -24,7 +24,7 @@ class Agente:
         return False  # bloqueado por pared o borde
 
     def posicion_actual(self):
-        return (self.y,self.x)
+        return (self.x,self.y)
 
 # Generar población inicial
 def población_inicial(poblacion = 50, movimientos = 20):
@@ -37,47 +37,34 @@ def población_inicial(poblacion = 50, movimientos = 20):
 
 # Función de evaluación, mide desempeño del agente
 def fitness(cromosoma, lab, inicio=(0, 0), devolver_estados=False):
-    lab_temp = copy.deepcopy(lab)
-    agente = Agente(lab_temp, inicio)
+    agente = Agente(lab, inicio)
     num_movimiento = 1
 
-    # Lista para guardar los estados del laberinto
-    historial_estados = []
-    if devolver_estados:
-        historial_estados.append([fila[:] for fila in lab_temp.grid])
-
     for mov in cromosoma:
-        # Mover paredes
-        lab_temp.mover_paredes(prob=0.2)
-
-        # Guardar estado tras mover paredes
-        if devolver_estados:
-            historial_estados.append([fila[:] for fila in lab_temp.grid])
-
         # Verificar si el agente quedó atrapado
-        if lab_temp.es_pared(agente.posicion_actual()):
-            return (0, historial_estados) if devolver_estados else 0
+        if lab.es_pared(agente.posicion_actual()):
+            return (0, []) if devolver_estados else 0
 
         # Intentar mover
         exito = agente.mover(mov)
         if exito == False:
-            return (0, historial_estados) if devolver_estados else 0
+            return (0, []) if devolver_estados else 0
 
         # Verificar si llegó a la salida real
-        if lab_temp.es_salida_real(agente.posicion_actual()):
-            return (1000 + (len(cromosoma) - num_movimiento), historial_estados) if devolver_estados else 1000 + (len(cromosoma) - num_movimiento)
+        if lab.es_salida_real(agente.posicion_actual()):
+            return (1000 + (len(cromosoma) - num_movimiento)) if devolver_estados else 1000 + (len(cromosoma) - num_movimiento)
 
         num_movimiento += 1
 
     # Calcular distancia a la salida real
     x, y = agente.posicion_actual()
-    salida_x, salida_y = lab_temp.salida_real.posicion
+    salida_x, salida_y = lab.salida_real.posicion
     distancia = abs(x - salida_x) + abs(y - salida_y)
 
     resultado = 1 / (1 + distancia)
 
     # Retornar fitness y estados (si se pidió)
-    return (resultado, historial_estados) if devolver_estados else resultado
+    return (resultado) if devolver_estados else resultado
 
 
 def seleccion(poblacion, lab, inicio, k=5):
@@ -109,7 +96,7 @@ def mutacion(cromosoma, prob=0.1):
     return cromosoma
 
 # Algoritmo genético principal
-def algoritmo_genetico(lab, inicio=(0, 0), generaciones=40, poblacion=25, movimientos=20):
+def algoritmo_genetico(lab, inicio=(0, 0), generaciones=120, poblacion=50, movimientos=20):
     poblacion_actual = población_inicial(poblacion, movimientos)
     mejor, mejor_fit = None, float("-inf")
 
@@ -124,7 +111,7 @@ def algoritmo_genetico(lab, inicio=(0, 0), generaciones=40, poblacion=25, movimi
             padre1 = seleccion(poblacion_actual, lab, inicio)
             padre2 = seleccion(poblacion_actual, lab, inicio)
             hijo = reproducir(padre1, padre2)
-            hijo = mutacion(hijo, prob=0.15)
+            hijo = mutacion(hijo, prob=0.1)
             nueva_poblacion.append(hijo)
 
         # Evaluar nueva generación
@@ -135,20 +122,15 @@ def algoritmo_genetico(lab, inicio=(0, 0), generaciones=40, poblacion=25, movimi
                 mejor_fit, mejor = f, cromosoma
 
         print(f"Generación {gen + 1}: mejor fitness = {round(mejor_fit, 3)}")
-
-    # Aquí obtenemos el historial y detectamos hasta qué paso llegó
-    _, historial_estados = fitness(mejor, lab, inicio, devolver_estados=True)
-
     # recortamos el cromosoma hasta donde llegó a la salida
-    lab_temp = copy.deepcopy(lab)
-    agente = Agente(lab_temp, inicio)
+    agente = Agente(lab, inicio)
     pasos_validos = 0
     for mov in mejor:
         agente.mover(mov)
         pasos_validos += 1
-        if lab_temp.es_salida_real(agente.posicion_actual()):
+        if lab.es_salida_real(agente.posicion_actual()):
             break  # si llegó, salir del bucle
     mejor = mejor[:pasos_validos]
 
     # retornamos también el historial junto al mejor y su fitness
-    return mejor, mejor_fit, historial_estados
+    return mejor, mejor_fit
