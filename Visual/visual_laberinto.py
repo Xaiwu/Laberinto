@@ -59,7 +59,7 @@ class LaberintoVisual:
                 self.dibujar_agente()
                 pygame.display.flip()
                 b,r = self.agente.paso() # Algoritmo A*
-                pygame.time.wait(100)
+                #pygame.time.wait(100)
             fin = time.time()
             duracion = fin - inicio
             print(f"Duración: {duracion:.4f} segundos")
@@ -103,7 +103,7 @@ class LaberintoVisual:
                 self.agente.lab.grid = lab_fila.pop(0)
             self.agente.posicion = np
 
-            pygame.time.wait(100)
+            #pygame.time.wait(100)
 
             self.pantalla.fill(CONFIG.BLANCO)
             self.dibujar_grid()
