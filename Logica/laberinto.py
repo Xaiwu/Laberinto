@@ -49,13 +49,13 @@ class Laberinto:
         x, y = pos
         return 0 <= x < self.n and 0 <= y < self.n
 
-    def mover_paredes(self, prob=0.2):
+    def mover_paredes(self, pos_agente, prob=0.2):
         """Con probabilidad 'prob', mueve cada pared a una casilla vacía"""
         nuevas_paredes = []
         for pared in self.paredes:
             if random.random() < prob:
                 vacias = [(nx, ny) for nx, ny in self.vecinos(pared.posicion)
-                        if self.grid[nx][ny] == self.VACIO]
+                        if self.grid[nx][ny] == self.VACIO and (nx, ny) != pos_agente]
                 if vacias:
                     self.grid[pared.posicion[0]][pared.posicion[1]] = self.VACIO
                     pared.mover([random.choice(vacias)]) 

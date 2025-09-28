@@ -198,9 +198,9 @@ class ARepetido:
                     destino = random.choice(candidatos)
                     self._mover_a(destino)
                     # mover paredes luego
-                    self.lab.mover_paredes(self.prob_mover_paredes)
+                    self.lab.mover_paredes(self.posicion, self.prob_mover_paredes)
                     return True, "ESP" # EXPLORANDO
-                self.lab.mover_paredes(self.prob_mover_paredes)
+                self.lab.mover_paredes(self.posicion, self.prob_mover_paredes)
                 return True, "SA" # SIN ACCION (atrapado)
 
         # Ejecutar siguiente paso del plan
@@ -211,7 +211,7 @@ class ARepetido:
                 # Pared dinámica bloqueó el plan
                 self.plan_actual = []
             # Dinámica
-            self.lab.mover_paredes(self.prob_mover_paredes)
+            self.lab.mover_paredes(self.posicion, self.prob_mover_paredes)
 
         self.pasos += 1
         return True, "A" # AVANZANDO
