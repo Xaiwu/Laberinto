@@ -178,7 +178,7 @@ class ARepetido:
         if self.lab.es_salida(self.posicion):
             if self.lab.es_salida_real(self.posicion):
                 self.encontro_real = True
-                return False, f"Salida REAL encontrada en {self.posicion}"
+                return False, "W" # WIN
             else:
                 # Salida falsa descubierta
                 self.salidas_falsas.add(self.posicion)
@@ -199,9 +199,9 @@ class ARepetido:
                     self._mover_a(destino)
                     # mover paredes luego
                     self.lab.mover_paredes(self.prob_mover_paredes)
-                    return True, "Explorando sin plan"
+                    return True, "ESP" # EXPLORANDO
                 self.lab.mover_paredes(self.prob_mover_paredes)
-                return True, "Esperando acciones posibles"
+                return True, "SA" # SIN ACCION (atrapado)
 
         # Ejecutar siguiente paso del plan
         if self.plan_actual:
@@ -214,7 +214,7 @@ class ARepetido:
             self.lab.mover_paredes(self.prob_mover_paredes)
 
         self.pasos += 1
-        return True, "Avanzando"
+        return True, "A" # AVANZANDO
     
     # Ejecuta el ciclo completo hasta terminar
     def run(self, interactivo=True):
