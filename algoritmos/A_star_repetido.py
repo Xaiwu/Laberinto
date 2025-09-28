@@ -200,7 +200,8 @@ class ARepetido:
                     # mover paredes luego
                     self.lab.mover_paredes(self.prob_mover_paredes)
                     return True, "Explorando sin plan"
-                return False, "Sin acciones posibles"
+                self.lab.mover_paredes(self.prob_mover_paredes)
+                return True, "Esperando acciones posibles"
 
         # Ejecutar siguiente paso del plan
         if self.plan_actual:
