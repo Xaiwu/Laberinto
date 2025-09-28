@@ -96,7 +96,7 @@ def mutacion(cromosoma, prob=0.1):
     return cromosoma
 
 # Algoritmo genético principal
-def algoritmo_genetico(lab, inicio=(0, 0), generaciones=120, poblacion=50, movimientos=500):
+def algoritmo_genetico(lab, inicio=(0, 0), generaciones=120, poblacion=50, movimientos=100):
     poblacion_actual = población_inicial(poblacion, movimientos)
     mejor, mejor_fit = None, float("-inf")
 

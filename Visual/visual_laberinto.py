@@ -1,4 +1,5 @@
 import copy
+import time
 
 from Logica.laberinto import Laberinto
 from Visual import visual_controller as CONFIG #type:ignore
@@ -50,17 +51,25 @@ class LaberintoVisual:
 
     def llamar_alg(self):
         if self.modo == "A*":
+            inicio = time.time()
             b,r = self.agente.paso() # Algoritmo A*
-
-            if r == 'W':
-                print("GANASTE!")
+            while r != 'W':
+                self.pantalla.fill(CONFIG.BLANCO)
+                self.dibujar_grid()
+                self.dibujar_agente()
+                pygame.display.flip()
+                b,r = self.agente.paso() # Algoritmo A*
+                pygame.time.wait(100)
+            fin = time.time()
+            duracion = fin - inicio
+            print(f"Duración: {duracion:.4f} segundos")
         else:
             self.alg_genetico()
 
     def alg_genetico(self):
-        pasos, fit = genetico.algoritmo_genetico(self.agente.lab)
-
+        inicio = time.time()
         save_initial_grid = copy.deepcopy(self.agente.lab.grid)
+        pasos, fit = genetico.algoritmo_genetico(self.agente.lab)
         pos_fila = []
         lab_fila = []
         np = (0,0)
@@ -77,11 +86,10 @@ class LaberintoVisual:
                 np = (np[0] - 1,np[1])
 
             if (not self.agente.lab.en_rango(np)) or self.agente.lab.es_pared(np):
-                if lab_fila.__len__() > 0:
-                    self.agente.lab.grid = lab_fila.pop()
-                else:
-                    np = (0,0)
-                    self.agente.lab.grid = save_initial_grid
+                self.agente.lab.grid = copy.deepcopy(save_initial_grid)
+                np = (0,0)
+                pos_fila = []
+                lab_fila = []
                 pasos, fit = genetico.algoritmo_genetico(self.agente.lab)
                 print("CHOCO!")
             else:
@@ -89,20 +97,22 @@ class LaberintoVisual:
                 lab_fila.append(copy.deepcopy(self.agente.lab.grid))
             self.agente.lab.mover_paredes(np)
         while pos_fila.__len__() > 0:
-            self.pantalla.fill(CONFIG.BLANCO)
             aux = pos_fila.pop(0)
             np = aux            
             if lab_fila.__len__() > 0:
                 self.agente.lab.grid = lab_fila.pop(0)
             self.agente.posicion = np
 
-            pygame.time.wait(500)
+            pygame.time.wait(100)
 
+            self.pantalla.fill(CONFIG.BLANCO)
             self.dibujar_grid()
             self.dibujar_agente()
             pygame.display.flip()
 
-        pygame.time.wait(2000)
+        fin = time.time()
+        duracion = fin - inicio
+        print(f"Duración: {duracion:.4f} segundos")
 
 
     # Dibujar el laberinto
