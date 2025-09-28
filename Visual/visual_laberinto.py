@@ -8,14 +8,17 @@ class LaberintoVisual:
         self.tam_bloque = tam_bloque
 
     def run(self,pantalla):
+        self.laberinto.mover_paredes()
         self.pantalla = pantalla
         self.pantalla.fill(CONFIG.BLANCO)
         self.dibujar_grid()
 
+        pygame.time.Clock().tick(30)
+
     def event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                self.laberinto.mover_paredes()
+                pass
 
     # Dibujar el laberinto
     def dibujar_grid(self):
