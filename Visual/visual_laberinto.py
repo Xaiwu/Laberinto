@@ -60,6 +60,7 @@ class LaberintoVisual:
     def alg_genetico(self):
         pasos, fit = genetico.algoritmo_genetico(self.agente.lab)
 
+        save_initial_grid = copy.deepcopy(self.agente.lab.grid)
         pos_fila = []
         lab_fila = []
         np = (0,0)
@@ -75,23 +76,27 @@ class LaberintoVisual:
             if var == 'LEFT':
                 np = (np[0] - 1,np[1])
 
-            if self.agente.lab.es_pared(np) or not self.agente.lab.en_rango(np):
-                np = (0,0)
+            if (not self.agente.lab.en_rango(np)) or self.agente.lab.es_pared(np):
+                if lab_fila.__len__() > 0:
+                    self.agente.lab.grid = lab_fila.pop()
+                else:
+                    np = (0,0)
+                    self.agente.lab.grid = save_initial_grid
                 pasos, fit = genetico.algoritmo_genetico(self.agente.lab)
-                pos_fila = []
-                lab_fila = []
+                print("CHOCO!")
             else:
                 pos_fila.append(np)
                 lab_fila.append(copy.deepcopy(self.agente.lab.grid))
             self.agente.lab.mover_paredes(np)
-
         while pos_fila.__len__() > 0:
             self.pantalla.fill(CONFIG.BLANCO)
-            np = pos_fila.pop(0)
-            self.agente.lab.grid = lab_fila.pop(0)
+            aux = pos_fila.pop(0)
+            np = aux            
+            if lab_fila.__len__() > 0:
+                self.agente.lab.grid = lab_fila.pop(0)
             self.agente.posicion = np
 
-            pygame.time.wait(100)
+            pygame.time.wait(500)
 
             self.dibujar_grid()
             self.dibujar_agente()

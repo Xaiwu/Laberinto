@@ -96,7 +96,7 @@ def mutacion(cromosoma, prob=0.1):
     return cromosoma
 
 # Algoritmo genético principal
-def algoritmo_genetico(lab, inicio=(0, 0), generaciones=120, poblacion=50, movimientos=20):
+def algoritmo_genetico(lab, inicio=(0, 0), generaciones=120, poblacion=50, movimientos=500):
     poblacion_actual = población_inicial(poblacion, movimientos)
     mejor, mejor_fit = None, float("-inf")
 
@@ -121,7 +121,7 @@ def algoritmo_genetico(lab, inicio=(0, 0), generaciones=120, poblacion=50, movim
             if f > mejor_fit:
                 mejor_fit, mejor = f, cromosoma
 
-        print(f"Generación {gen + 1}: mejor fitness = {round(mejor_fit, 3)}")
+        #print(f"Generación {gen + 1}: mejor fitness = {round(mejor_fit, 3)}")
     # recortamos el cromosoma hasta donde llegó a la salida
     agente = Agente(lab, inicio)
     pasos_validos = 0
