@@ -5,6 +5,7 @@ import pandas as pd
 
 from Logica.laberinto import Laberinto
 from algoritmos.A_star_repetido import ARepetido
+from algoritmos.genetico import algoritmo_genetico_dinamico
 
 def run_a_repetido(lab, prob_move, modo='exploracion', vision=2):
     agente = ARepetido(
@@ -22,6 +23,20 @@ def run_a_repetido(lab, prob_move, modo='exploracion', vision=2):
     pasos = agente.pasos
     return t1 - t0, pasos 
 
+def run_genetico(lab, prob_move,mov):
+    agente = ARepetido(
+        inicio=(0, 0),
+        salidas=lab.salidas,
+        laberinto=lab,
+        prob_mover_paredes=prob_move,
+        debug=False,
+    )
+    t0 = time.time()
+    algoritmo_genetico_dinamico(agente.lab,prob_move,movimientos=mov)
+    t1 = time.time()
+    pasos = agente.pasos
+    return t1 - t0, pasos 
+
 def crear_laberinto(tamaño, pared_densidad, num_salidas):
     n = tamaño * tamaño
     num_pared = int(n * pared_densidad)
@@ -33,33 +48,47 @@ def ejecutar_experimentos(
     prob_movimientos = [0.1, 0.2, 0.4],
     num_salidas = 6,
     repeticiones = 5,
-    seed = 42,
     archivo_detalle = "resultados_experimentos_detalle.csv",
     separador = ";"
 ):
+    seed = random.random()
     random.seed(seed)
     resultados = []
 
     for tamaño in tamaños:
         for prob in prob_movimientos:
-            for rep in range(repeticiones):
+            for r in range(repeticiones):
                 lab_base, num_pared = crear_laberinto(tamaño, 0.2, num_salidas)
-                lab_for_astar = copy.deepcopy(lab_base)
-                tiempo, pasos = run_a_repetido(
-                    lab_for_astar,
-                    prob_move=prob,
-                    modo='exploracion',
-                    vision=2
-                )
-                registro = {
-                    "algoritmo": "A*_Repetido",
-                    "tamaño": tamaño,
-                    "num_pared": num_pared,
-                    "prob_movimiento": prob,
-                    "longitud_camino": pasos,
-                    "tiempo_segundos": tiempo,
-                }
-                resultados.append(registro)
+                seed += 1
+                random.seed(seed)
+                for mode in range(2):
+                    lab_aux = copy.deepcopy(lab_base)
+                    if mode == 0:
+                        alg = "A*_Repetido"
+                        tiempo, pasos = run_a_repetido(
+                            lab_aux,
+                            prob_move=prob,
+                            modo='exploracion',
+                            vision=2
+                        )
+                    else:
+                        alg = "Genético"
+                        tiempo, pasos = run_genetico(
+                            lab_aux,
+                            prob_move=prob,
+                            mov = int(3.5*tamaño)
+                        )
+
+                    registro = {
+                        "algoritmo": alg,
+                        "tamaño": tamaño,
+                        "num_pared": num_pared,
+                        "prob_movimiento": prob,
+                        "longitud_camino": pasos,
+                        "tiempo_segundos": tiempo,
+                    }
+                    resultados.append(registro)
+                    print(f"tam: {tamaño}, prob: {prob}, repetición: {r} de {alg}listo!")
 
     df = pd.DataFrame(resultados)
     print(df.head())
