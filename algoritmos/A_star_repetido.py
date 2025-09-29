@@ -42,7 +42,7 @@ class ARepetido:
                         if self.lab.es_pared(pos):
                             self.mapa[pos] = 'pared'
                         elif self.lab.es_salida(pos):
-                            print(f"[DEBUG] Percibida salida en {pos}")
+                            # print(f"[DEBUG] Percibida salida en {pos}")
                             self.mapa[pos] = 'salida'
                         else:
                             self.mapa[pos] = 'libre'
@@ -219,16 +219,16 @@ class ARepetido:
     # Ejecuta el ciclo completo hasta terminar
     def run(self, interactivo=True):
         while True:
-            self.lab.mostrar(self.posicion)
+            # self.lab.mostrar(self.posicion)
             cont, msg = self.paso()
             # Mostrar el laberinto y la posición del agente
-            print(f"\nPaso={self.pasos} Pos={self.posicion} Msg={msg}")
+            # print(f"\nPaso={self.pasos} Pos={self.posicion} Msg={msg}")
             if interactivo:
                 input("Presiona Enter para continuar al siguiente paso...")  # Pausa
             if not cont:
-                print(msg)
+                # print(msg)
                 break
-        if self.encontro_real:
-            print(f"Éxito en {self.pasos} pasos.")
-        else:
-            print("Fallo (no encontró salida real).")
+        # if self.encontro_real:
+        #     print(f"Éxito en {self.pasos} pasos.")
+        # else:
+        #     print("Fallo (no encontró salida real).")
