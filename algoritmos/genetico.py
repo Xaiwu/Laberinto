@@ -95,7 +95,7 @@ def mutacion(cromosoma, prob=0.1):
             cromosoma[i] = random.choice(MOVIMIENTOS)
     return cromosoma
 
-def algoritmo_genetico_dinamico(lab, prob_move,inicio=(0, 0), generaciones=120, poblacion=50, movimientos=100):
+def algoritmo_genetico_dinamico(lab, prob_move = 0.2 ,inicio=(0, 0), generaciones=120, poblacion=50, movimientos=100):
         save_initial_lab = copy.deepcopy(lab)
         pasos, fit = algoritmo_genetico(lab,inicio,generaciones,poblacion,movimientos)
         pos_fila = []
