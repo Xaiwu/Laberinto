@@ -95,35 +95,44 @@ def mutacion(cromosoma, prob=0.1):
             cromosoma[i] = random.choice(MOVIMIENTOS)
     return cromosoma
 
-def algoritmo_genetico_dinamico(lab, prob_move,inicio=(0, 0), generaciones=120, poblacion=50, movimientos=100):
-        save_initial_lab = copy.deepcopy(lab)
-        pasos, fit = algoritmo_genetico(lab,inicio,generaciones,poblacion,movimientos)
-        pos_fila = []
-        lab_fila = []
-        np = (0,0)
-        while pasos.__len__() > 0: # type:ignore
-            var = pasos.pop(0)
-            if var == 'DOWN':
-                np = (np[0],np[1]+1)
-            if var == 'UP':
-                np = (np[0],np[1]-1)
-            if var == 'RIGHT':
-                np = (np[0] + 1,np[1])
-            if var == 'LEFT':
-                np = (np[0] - 1,np[1])
+def algoritmo_genetico_dinamico(lab, prob_move, inicio=(0, 0), generaciones=120, poblacion=50, movimientos=30):
+    lab = copy.deepcopy(lab)
+    pasos, fit = algoritmo_genetico(lab, inicio, generaciones, poblacion, movimientos)
 
-            if (not lab.en_rango(np)) or lab.es_pared(np):
-                lab = copy.deepcopy(save_initial_lab)
-                np = (0,0)
-                pos_fila = []
-                lab_fila = []
-                pasos, fit = algoritmo_genetico(lab,inicio,generaciones,poblacion,movimientos)
-                #print("CHOCO!")
-            else:
-                pos_fila.append(np)
-                lab_fila.append(copy.deepcopy(lab.grid))
-            lab.mover_paredes(np,prob_move)
-        return pos_fila,lab_fila
+    pos_fila = []
+    lab_fila = []
+
+    np = inicio
+    lab_fila.append(copy.deepcopy(lab.grid))   # guardamos el estado inicial
+    pos_fila.append(np)
+
+    while pasos.__len__() > 0:  # type:ignore
+        var = pasos.pop(0)
+        prev_pos = np
+        prev_lab = copy.deepcopy(lab)  # guardamos estado antes de mover
+
+        if var == 'DOWN':
+            np = (np[0], np[1] + 1)
+        if var == 'UP':
+            np = (np[0], np[1] - 1)
+        if var == 'RIGHT':
+            np = (np[0] + 1, np[1])
+        if var == 'LEFT':
+            np = (np[0] - 1, np[1])
+
+        if (not lab.en_rango(np)) or lab.es_pared(np):
+            # Retrocedemos al estado anterior
+            np = prev_pos
+            lab = prev_lab
+            pasos, fit = algoritmo_genetico(lab,np,generaciones,poblacion,movimientos) 
+        else:
+            pos_fila.append(np)
+            lab_fila.append(copy.deepcopy(lab.grid))
+
+        # mover paredes depende de la nueva posición (válida o no)
+        lab.mover_paredes(np, prob_move)
+
+    return pos_fila, lab_fila
 
 # Algoritmo genético principal
 def algoritmo_genetico(lab, inicio=(0, 0), generaciones=120, poblacion=50, movimientos=100):

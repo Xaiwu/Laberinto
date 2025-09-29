@@ -76,7 +76,7 @@ def ejecutar_experimentos(
                         tiempo, pasos = run_genetico(
                             lab_aux,
                             prob_move=prob,
-                            mov = int(3.5*tamaño)
+                            mov = int(5*tamaño)
                         )
 
                     registro = {

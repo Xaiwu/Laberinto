@@ -69,7 +69,7 @@ class LaberintoVisual:
     def alg_genetico(self):
 
         inicio = time.time()
-        pos_fila,lab_fila = genetico.algoritmo_genetico_dinamico(self.agente.lab)
+        pos_fila,lab_fila = genetico.algoritmo_genetico_dinamico(self.agente.lab,prob_move=0.2)
         fin = time.time()
         duracion = fin - inicio
         print(f"Duración: {duracion:.4f} segundos")
