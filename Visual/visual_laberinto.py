@@ -67,35 +67,13 @@ class LaberintoVisual:
             self.alg_genetico()
 
     def alg_genetico(self):
-        inicio = time.time()
-        save_initial_grid = copy.deepcopy(self.agente.lab.grid)
-        pasos, fit = genetico.algoritmo_genetico(self.agente.lab)
-        pos_fila = []
-        lab_fila = []
-        np = (0,0)
-        while pasos.__len__() > 0: # type:ignore
-            var = pasos.pop(0)
-            self.pantalla.fill(CONFIG.BLANCO)
-            if var == 'DOWN':
-                np = (np[0],np[1]+1)
-            if var == 'UP':
-                np = (np[0],np[1]-1)
-            if var == 'RIGHT':
-                np = (np[0] + 1,np[1])
-            if var == 'LEFT':
-                np = (np[0] - 1,np[1])
 
-            if (not self.agente.lab.en_rango(np)) or self.agente.lab.es_pared(np):
-                self.agente.lab.grid = copy.deepcopy(save_initial_grid)
-                np = (0,0)
-                pos_fila = []
-                lab_fila = []
-                pasos, fit = genetico.algoritmo_genetico(self.agente.lab)
-                print("CHOCO!")
-            else:
-                pos_fila.append(np)
-                lab_fila.append(copy.deepcopy(self.agente.lab.grid))
-            self.agente.lab.mover_paredes(np)
+        inicio = time.time()
+        pos_fila,lab_fila = genetico.algoritmo_genetico_dinamico(self.agente.lab)
+        fin = time.time()
+        duracion = fin - inicio
+        print(f"Duración: {duracion:.4f} segundos")
+
         while pos_fila.__len__() > 0:
             aux = pos_fila.pop(0)
             np = aux            
@@ -103,17 +81,14 @@ class LaberintoVisual:
                 self.agente.lab.grid = lab_fila.pop(0)
             self.agente.posicion = np
 
-            #pygame.time.wait(100)
-
-            self.pantalla.fill(CONFIG.BLANCO)
-            self.dibujar_grid()
-            self.dibujar_agente()
-            pygame.display.flip()
-
-        fin = time.time()
-        duracion = fin - inicio
-        print(f"Duración: {duracion:.4f} segundos")
-
+            pygame.time.wait(200)
+            self.draw()
+            
+    def draw(self):
+        self.pantalla.fill(CONFIG.BLANCO)
+        self.dibujar_grid()
+        self.dibujar_agente()
+        pygame.display.flip()
 
     # Dibujar el laberinto
     def dibujar_grid(self):
