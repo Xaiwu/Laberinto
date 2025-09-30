@@ -95,8 +95,12 @@ def mutacion(cromosoma, prob=0.1):
             cromosoma[i] = random.choice(MOVIMIENTOS)
     return cromosoma
 
+# Esta funcion hace dinámico al algoritmo genético, lo que hace es calcular un solucion
+# estática y utilizarla en un entorno dinámico, si choca debido al entorno dinámico, se vuelve a 
+# calcular el camino con este nuevo estado
 def algoritmo_genetico_dinamico(lab, prob_move, inicio=(0, 0), generaciones=120, poblacion=50, movimientos=30):
     lab = copy.deepcopy(lab)
+    # Llama al algoritmo genetico en un estado del laberinto
     pasos, fit = algoritmo_genetico(lab, inicio, generaciones, poblacion, movimientos)
 
     pos_fila = []
@@ -106,6 +110,8 @@ def algoritmo_genetico_dinamico(lab, prob_move, inicio=(0, 0), generaciones=120,
     lab_fila.append(copy.deepcopy(lab.grid))   # guardamos el estado inicial
     pos_fila.append(np)
 
+    # Por cada paso del cromosoma si no choca se guarda, pero si choca se recalculan los 
+    # proximos pasos
     while pasos.__len__() > 0:  # type:ignore
         var = pasos.pop(0)
         prev_pos = np
@@ -120,6 +126,7 @@ def algoritmo_genetico_dinamico(lab, prob_move, inicio=(0, 0), generaciones=120,
         if var == 'LEFT':
             np = (np[0] - 1, np[1])
 
+        # Choca, actualiza el algoritmo
         if (not lab.en_rango(np)) or lab.es_pared(np):
             # Retrocedemos al estado anterior
             np = prev_pos
@@ -134,7 +141,7 @@ def algoritmo_genetico_dinamico(lab, prob_move, inicio=(0, 0), generaciones=120,
 
     return pos_fila, lab_fila
 
-# Algoritmo genético principal
+# Algoritmo genético principal, busca la salida sin un entorno dinámico
 def algoritmo_genetico(lab, inicio=(0, 0), generaciones=120, poblacion=50, movimientos=100):
     poblacion_actual = población_inicial(poblacion, movimientos)
     mejor, mejor_fit = None, float("-inf")

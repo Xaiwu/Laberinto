@@ -32,9 +32,10 @@ def run_genetico(lab, prob_move,mov):
         debug=False,
     )
     t0 = time.time()
-    algoritmo_genetico_dinamico(agente.lab,prob_move,movimientos=mov)
+    pos_fila,_ = algoritmo_genetico_dinamico(agente.lab,prob_move,movimientos=mov)
+    pasos = pos_fila.__len__()
+
     t1 = time.time()
-    pasos = agente.pasos
     return t1 - t0, pasos 
 
 def crear_laberinto(tamaño, pared_densidad, num_salidas):
@@ -88,7 +89,7 @@ def ejecutar_experimentos(
                         "tiempo_segundos": tiempo,
                     }
                     resultados.append(registro)
-                    print(f"tam: {tamaño}, prob: {prob}, repetición: {r} de {alg}listo!")
+                    print(f"tam: {tamaño}, pasos: {pasos}, prob: {prob}, repetición: {r} de {alg} listo!")
 
     df = pd.DataFrame(resultados)
     print(df.head())
